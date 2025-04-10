@@ -17,7 +17,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Compile C++ files
+      - name: Install compilers
+        run: |
+          sudo apt update
+          sudo apt install -y g++ mono-mcs default-jdk
+
       - name: Compile C++ files
         run: |
           mkdir -p bin/cpp
@@ -25,7 +29,6 @@ jobs:
             g++ "$file" -o "bin/cpp/$(basename ${file%.cpp})"
           done
 
-      # Compile C# files
       - name: Compile C# files
         run: |
           mkdir -p bin/csharp
@@ -33,7 +36,6 @@ jobs:
             mcs "$file" -out:"bin/csharp/$(basename ${file%.cs}).exe"
           done
 
-      # Compile Kotlin files
       - name: Compile Kotlin files
         run: |
           mkdir -p bin/kotlin
@@ -41,11 +43,9 @@ jobs:
             kotlinc "$file" -include-runtime -d "bin/kotlin/$(basename ${file%.kt}).jar"
           done
 
-      # Package all into zip (only on release)
       - name: Create ZIP archive
         if: github.event_name == 'release'
-        run: |
-          zip -r compiled_outputs.zip bin/
+        run: zip -r compiled_outputs.zip bin/
 
       - name: Upload artifact
         if: github.event_name == 'release'
