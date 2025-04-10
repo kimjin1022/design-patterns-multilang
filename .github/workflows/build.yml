@@ -44,10 +44,11 @@ jobs:
       - name: Create ZIP archive
         if: github.event_name == 'release'
         run: |
-          echo "[🔧] Creating ZIP..."
+          echo "[🔍] Listing bin/ before zipping..."
           ls -R bin/
+          echo "[🔧] Zipping contents of bin/..."
           zip -r compiled_outputs.zip bin/
-          echo "[✅] ZIP created:"
+          echo "[✅] ZIP archive created:"
           ls -lh compiled_outputs.zip
 
       - name: Upload ZIP to GitHub Release
