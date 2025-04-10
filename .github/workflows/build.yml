@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v3
@@ -44,11 +46,9 @@ jobs:
       - name: Create ZIP archive
         if: github.event_name == 'release'
         run: |
-          echo "[🔍] Listing bin/ before zipping..."
+          echo "[🔍] bin/ 내용:"
           ls -R bin/
-          echo "[🔧] Zipping contents of bin/..."
           zip -r compiled_outputs.zip bin/
-          echo "[✅] ZIP archive created:"
           ls -lh compiled_outputs.zip
 
       - name: Upload ZIP to GitHub Release
