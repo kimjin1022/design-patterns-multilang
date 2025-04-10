@@ -14,11 +14,14 @@ class Cat : IAnimal {
 
 class AnimalFactory {
     public IAnimal CreateAnimal(string type) {
-        return type switch {
-            "dog" => new Dog(),
-            "cat" => new Cat(),
-            _ => null
-        };
+        switch (type) {
+            case "dog":
+                return new Dog();
+            case "cat":
+                return new Cat();
+            default:
+                return null;
+        }
     }
 }
 
