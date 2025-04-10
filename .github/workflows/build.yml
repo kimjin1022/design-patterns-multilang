@@ -1,0 +1,55 @@
+name: Multi-language Design Patterns Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Compile C++ files
+      - name: Compile C++ files
+        run: |
+          mkdir -p bin/cpp
+          for file in cpp/*.cpp; do
+            g++ "$file" -o "bin/cpp/$(basename ${file%.cpp})"
+          done
+
+      # Compile C# files
+      - name: Compile C# files
+        run: |
+          mkdir -p bin/csharp
+          for file in csharp/*.cs; do
+            mcs "$file" -out:"bin/csharp/$(basename ${file%.cs}).exe"
+          done
+
+      # Compile Kotlin files
+      - name: Compile Kotlin files
+        run: |
+          mkdir -p bin/kotlin
+          for file in kotlin/*.kt; do
+            kotlinc "$file" -include-runtime -d "bin/kotlin/$(basename ${file%.kt}).jar"
+          done
+
+      # Package all into zip (only on release)
+      - name: Create ZIP archive
+        if: github.event_name == 'release'
+        run: |
+          zip -r compiled_outputs.zip bin/
+
+      - name: Upload artifact
+        if: github.event_name == 'release'
+        uses: actions/upload-artifact@v3
+        with:
+          name: compiled_outputs
+          path: compiled_outputs.zip
